@@ -1,6 +1,6 @@
 ## 📥 Mangadex Downloader
 
-A simple CLI tool to download manga chapters (solo or bulk) from MangaDex.
+A CLI tool to download manga chapters (solo or bulk) from MangaDex.
 
 ### 🪐 Features
 
@@ -40,10 +40,12 @@ pip install mangadex-dl
 | `fr`               | French                      |
 | `id`               | Indonesian                  |
 | `it`               | Italian                     |
+| `ko`               | Korean                      |
 | `pt`               | Portuguese (Portugal)       |
 | `pt-br`            | Portuguese (Brazil)         |
 | `ru`               | Russian                     |
 | `tr`               | Turkish                     |
+| `uk`               | Ukrainian                   |
 | `vi`               | Vietnamese                  |
 | `zh`               | Chinese                     |
 

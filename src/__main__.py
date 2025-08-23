@@ -17,12 +17,14 @@ LANGS_MAP = {
     "fr": "French",
     "id": "Indonesian",
     "it": "Italian",
+    "ko": "Korean",
     "pt": "Portuguese (Portugal)",
     "pt-br": "Portuguese (Brazil)",
     "ru": "Russian",
     "tr": "Turkish",
+    "uk": "Ukrainian",
     "vi": "Vietnamese",
-    "zh": "Chinese",
+    "zh": "Chinese"
 }
 
 

@@ -2,7 +2,7 @@
 A CLI tool to download manga chapters (solo or bulk) from MangaDex.
 """
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __description__ = "A CLI tool to download manga chapters (solo or bulk) from MangaDex."
 __repository__ = "syvixor/mangadex-dl"
 __author__ = "syvixor"

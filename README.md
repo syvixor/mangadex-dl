@@ -33,6 +33,7 @@ pip install mangadex-dl
 | Code               | Language                    |
 |--------------------|-----------------------------|
 | `ar`               | Arabic                      |
+| `bg`               | Bulgarian                   |
 | `de`               | German                      |
 | `en`               | English                     |
 | `es`               | Spanish                     |
@@ -41,6 +42,8 @@ pip install mangadex-dl
 | `id`               | Indonesian                  |
 | `it`               | Italian                     |
 | `ko`               | Korean                      |
+| `nl`               | Dutch                       |
+| `pl`               | Polish                      |
 | `pt`               | Portuguese (Portugal)       |
 | `pt-br`            | Portuguese (Brazil)         |
 | `ru`               | Russian                     |

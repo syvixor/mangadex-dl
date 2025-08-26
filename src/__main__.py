@@ -10,6 +10,7 @@ MANGADEX_API = "https://api.mangadex.org"
 
 LANGS_MAP = {
     "ar": "Arabic",
+    "bg": "Bulgarian",
     "de": "German",
     "en": "English",
     "es": "Spanish",
@@ -18,6 +19,8 @@ LANGS_MAP = {
     "id": "Indonesian",
     "it": "Italian",
     "ko": "Korean",
+    "nl": "Dutch",
+    "pl": "Polish",
     "pt": "Portuguese (Portugal)",
     "pt-br": "Portuguese (Brazil)",
     "ru": "Russian",

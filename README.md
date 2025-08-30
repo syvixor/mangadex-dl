@@ -87,12 +87,24 @@ chapter-1-en.zip
 Enter Manga ID: 559c5fc6-6a57-43a6-93cb-b43328bc1957
 ```
 
-Then select chapters interactively, e.g.:
+It will ask you to select 1 or more languages:
+
+```md
+Select Languages:
+✔ ar - Arabic
+✔ bg - Bulgarian
+✔ de - German
+✔ en - English
+...
+```
+
+Then select chapters, e.g.:
 
 ```md
 ✔ Chapter 1 [English]
 ✔ Chapter 1 [Arabic]
 ✔ Chapter 2 [English]
+...
 ```
 
 Files will be saved like:

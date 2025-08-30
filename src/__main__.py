@@ -89,12 +89,25 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
 
 def bulk_download(manga_id: str):
     SUPPORTED_LANGS = list(LANGS_MAP.keys())
-    lang_params = "&".join([f"translatedLanguage[]={lang}" for lang in SUPPORTED_LANGS])
+
+    selected_langs = questionary.checkbox(
+        "Select Languages:",
+        choices=[f"{code} - {LANGS_MAP[code]}" for code in SUPPORTED_LANGS]
+    ).ask()
+
+    if not selected_langs:
+        print("✗ No Languages Selected...")
+        return
+
+    selected_langs = [choice.split(" - ")[0] for choice in selected_langs]
+
+    lang_params = "&".join([f"translatedLanguage[]={lang}" for lang in selected_langs])
 
     url = (
         f"{MANGADEX_API}/manga/{manga_id}/feed?"
         f"limit=500&order[chapter]=asc&includeExternalUrl=0&{lang_params}"
     )
+    
     r = requests.get(url)
     r.raise_for_status()
     feed = r.json()["data"]
@@ -103,6 +116,7 @@ def bulk_download(manga_id: str):
     chapter_map = {}
     chapter_nums = {}
     chapter_langs = {}
+
     for ch in feed:
         ch_id = ch["id"]
         attrs = ch["attributes"]
@@ -120,6 +134,10 @@ def bulk_download(manga_id: str):
         chapter_map[display_name] = ch_id
         chapter_nums[ch_id] = ch_number or title
         chapter_langs[ch_id] = lang_code
+
+    if not chapters:
+        print("✗ No Chapters Found For Selected Language(s)...")
+        return
 
     selected = questionary.checkbox(
         "Select Chapters To Download:",

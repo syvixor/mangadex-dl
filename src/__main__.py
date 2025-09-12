@@ -5,6 +5,9 @@ import zipfile
 from tqdm import tqdm
 import questionary
 
+# ╔══════════════════════════════════════════════════════════════╗
+# ║                      GLOBAL CONSTANTS                        ║
+# ╚══════════════════════════════════════════════════════════════╝
 
 MANGADEX_API = "https://api.mangadex.org"
 
@@ -30,22 +33,31 @@ LANGS_MAP = {
     "zh": "Chinese"
 }
 
+# ╔══════════════════════════════════════════════════════════════╗
+# ║                     UTILITY / HELPERS                        ║
+# ╚══════════════════════════════════════════════════════════════╝
 
 def safe_filename(name: str) -> str:
+    # Replaces invalid file name characters with underscores
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
 
 def is_chapter_number(val: str) -> bool:
+    # Determines if the string is a valid chapter number (e.g., "1", "10.5")
     return bool(re.match(r'^\d+(\.\d+)?$', str(val)))
 
 
 def check_api_error(resp_json, context="Request"):
+    # Handles API error messages gracefully
     if resp_json.get("result") == "error":
         err = resp_json.get("errors", [{}])[0]
         print(f"✗ {context} Failed: {err.get('title', 'Unknown Error...')} - {err.get('detail', 'No Detail...')}")
         return True
     return False
 
+# ╔══════════════════════════════════════════════════════════════╗
+# ║                    CHAPTER DOWNLOADING                       ║
+# ╚══════════════════════════════════════════════════════════════╝
 
 def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str = None, lang_code: str = None):
     if chapter_num is None or lang_code is None:
@@ -57,6 +69,7 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
         chapter_num = attrs.get("chapter") or attrs.get("title") or "Untitled"
         lang_code = attrs.get("translatedLanguage", "xx")
 
+    # Fetch server details for downloading images
     url = f"{MANGADEX_API}/at-home/server/{chapter_id}"
     r = requests.get(url)
     r.raise_for_status()
@@ -65,8 +78,9 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
     base_url = data["baseUrl"]
     hash_code = data["chapter"]["hash"]
     pages = data["chapter"]["data"]
-    quality = "data"
+    quality = "data"  # can be changed to 'data-saver' for lower resolution
 
+    # Generate output filename
     if zip_filename is None:
         safe_name = safe_filename(str(chapter_num))
         if is_chapter_number(chapter_num):
@@ -74,6 +88,7 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
         else:
             zip_filename = f"{safe_name}-{lang_code}.zip"
 
+    # Download and save images into zip file
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         for i, page in enumerate(
             tqdm(pages, desc=f"✦ Processing {chapter_num}", bar_format="{l_bar}{bar} {n_fmt}/{total_fmt}"), 1):
@@ -86,10 +101,14 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
 
     print("✓ Downloaded & Saved")
 
+# ╔══════════════════════════════════════════════════════════════╗
+# ║                    BULK MANGA DOWNLOAD                       ║
+# ╚══════════════════════════════════════════════════════════════╝
 
 def bulk_download(manga_id: str):
     SUPPORTED_LANGS = list(LANGS_MAP.keys())
 
+    # Step 1: Ask for language(s)
     selected_langs = questionary.checkbox(
         "Select Languages:",
         choices=[f"{code} - {LANGS_MAP[code]}" for code in SUPPORTED_LANGS]
@@ -100,14 +119,14 @@ def bulk_download(manga_id: str):
         return
 
     selected_langs = [choice.split(" - ")[0] for choice in selected_langs]
-
     lang_params = "&".join([f"translatedLanguage[]={lang}" for lang in selected_langs])
 
+    # Step 2: Fetch chapter list
     url = (
         f"{MANGADEX_API}/manga/{manga_id}/feed?"
         f"limit=500&order[chapter]=asc&includeExternalUrl=0&{lang_params}"
     )
-    
+
     r = requests.get(url)
     r.raise_for_status()
     feed = r.json()["data"]
@@ -117,6 +136,7 @@ def bulk_download(manga_id: str):
     chapter_nums = {}
     chapter_langs = {}
 
+    # Step 3: Organize chapter data
     for ch in feed:
         ch_id = ch["id"]
         attrs = ch["attributes"]
@@ -139,6 +159,7 @@ def bulk_download(manga_id: str):
         print("✗ No Chapters Found For Selected Language(s)...")
         return
 
+    # Step 4: Ask user which chapters to download
     selected = questionary.checkbox(
         "Select Chapters To Download:",
         choices=chapters
@@ -150,6 +171,7 @@ def bulk_download(manga_id: str):
 
     os.makedirs(manga_id, exist_ok=True)
 
+    # Step 5: Download selected chapters
     for sel in selected:
         chap_id = chapter_map[sel]
         chap_num = chapter_nums[chap_id]
@@ -163,6 +185,9 @@ def bulk_download(manga_id: str):
         zip_filename = zip_filename.lower()
         download_chapter(chap_id, zip_filename, chap_num, chap_lang)
 
+# ╔══════════════════════════════════════════════════════════════╗
+# ║                            MAIN                              ║
+# ╚══════════════════════════════════════════════════════════════╝
 
 def main():
     print("✦ Mangadex Downloader ✦")
@@ -177,7 +202,6 @@ def main():
     else:
         manga_id = questionary.text("Enter Manga ID:").ask()
         bulk_download(manga_id)
-
 
 if __name__ == "__main__":
     main()

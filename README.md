@@ -72,19 +72,19 @@ The result will be `.zip` archives containing clean, ordered images of the manga
 **Solo Mode** (Chapter ID):
 
 ```md
-Enter Chapter ID: cd0dbfeb-3e6b-4f93-907c-8b2e71b41ae2
+Enter Chapter ID: 2c580bdd-0b72-4734-8c11-8a47d7525c7f
 ```
 
 This will save the chapter as:
 
 ```md
-chapter-1-en.zip
+chapter-[number]-[lang].zip
 ```
 
 **Bulk Mode** (Manga ID):
 
 ```md
-Enter Manga ID: 559c5fc6-6a57-43a6-93cb-b43328bc1957
+Enter Manga ID: d1a9fdeb-f713-407f-960c-8326b586e6fd
 ```
 
 It will ask you to select 1 or more languages:

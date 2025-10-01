@@ -98,6 +98,15 @@ Select Languages:
 ...
 ```
 
+You’ll then be asked:
+
+```md
+Include NSFW? (Default is `No`)
+```
+
+- Select `Yes` to include mature chapters.
+- Select `No` to only include safe chapters.
+
 Then select chapters, e.g.:
 
 ```md

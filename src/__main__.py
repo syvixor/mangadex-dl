@@ -122,10 +122,23 @@ def bulk_download(manga_id: str):
     lang_params = "&".join([f"translatedLanguage[]={lang}" for lang in selected_langs])
 
     # Step 2: Fetch chapter list
-    url = (
-        f"{MANGADEX_API}/manga/{manga_id}/feed?"
-        f"limit=500&order[chapter]=asc&includeExternalUrl=0&{lang_params}"
-    )
+    include_nsfw = questionary.confirm("Include NSFW?", default=False).ask()
+
+    if include_nsfw:
+        ratings = "&".join([
+            "contentRating[]=safe",
+            "contentRating[]=suggestive",
+            "contentRating[]=erotica",
+            "contentRating[]=pornographic"
+        ])
+    else:
+        ratings = "&".join([
+            "contentRating[]=safe",
+            "contentRating[]=suggestive"
+        ])
+    
+    url = (f"{MANGADEX_API}/manga/{manga_id}/feed?"
+           f"limit=500&order[chapter]=asc&includeExternalUrl=0&{lang_params}&{ratings}")
 
     r = requests.get(url)
     r.raise_for_status()

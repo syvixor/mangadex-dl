@@ -38,17 +38,14 @@ LANGS_MAP = {
 # ╚══════════════════════════════════════════════════════════════╝
 
 def safe_filename(name: str) -> str:
-    # Replaces invalid file name characters with underscores
     return re.sub(r'[\\/*?:"<>|]', "_", name)
 
 
 def is_chapter_number(val: str) -> bool:
-    # Determines if the string is a valid chapter number (e.g., "1", "10.5")
     return bool(re.match(r'^\d+(\.\d+)?$', str(val)))
 
 
 def check_api_error(resp_json, context="Request"):
-    # Handles API error messages gracefully
     if resp_json.get("result") == "error":
         err = resp_json.get("errors", [{}])[0]
         print(f"✗ {context} Failed: {err.get('title', 'Unknown Error...')} - {err.get('detail', 'No Detail...')}")
@@ -59,7 +56,8 @@ def check_api_error(resp_json, context="Request"):
 # ║                    CHAPTER DOWNLOADING                       ║
 # ╚══════════════════════════════════════════════════════════════╝
 
-def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str = None, lang_code: str = None):
+def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str = None,
+                     lang_code: str = None, archive_format: str = "zip"):
     if chapter_num is None or lang_code is None:
         meta_url = f"{MANGADEX_API}/chapter/{chapter_id}"
         meta = requests.get(meta_url).json()
@@ -78,17 +76,15 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
     base_url = data["baseUrl"]
     hash_code = data["chapter"]["hash"]
     pages = data["chapter"]["data"]
-    quality = "data"  # can be changed to 'data-saver' for lower resolution
+    quality = "data"
 
-    # Generate output filename
     if zip_filename is None:
         safe_name = safe_filename(str(chapter_num))
         if is_chapter_number(chapter_num):
-            zip_filename = f"chapter-{chapter_num}-{lang_code}.zip"
+            zip_filename = f"chapter-{chapter_num}-{lang_code}.{archive_format}"
         else:
-            zip_filename = f"{safe_name}-{lang_code}.zip"
+            zip_filename = f"{safe_name}-{lang_code}.{archive_format}"
 
-    # Download and save images into zip file
     with zipfile.ZipFile(zip_filename, "w") as zipf:
         for i, page in enumerate(
             tqdm(pages, desc=f"✦ Processing {chapter_num}", bar_format="{l_bar}{bar} {n_fmt}/{total_fmt}"), 1):
@@ -99,16 +95,15 @@ def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str
             short_name = f"{i:03d}{ext}"
             zipf.writestr(short_name, img_data)
 
-    print("✓ Downloaded & Saved")
+    print(f"✓ Downloaded & Saved as {zip_filename}")
 
 # ╔══════════════════════════════════════════════════════════════╗
 # ║                    BULK MANGA DOWNLOAD                       ║
 # ╚══════════════════════════════════════════════════════════════╝
 
-def bulk_download(manga_id: str):
+def bulk_download(manga_id: str, archive_format: str = "zip"):
     SUPPORTED_LANGS = list(LANGS_MAP.keys())
 
-    # Step 1: Ask for language(s)
     selected_langs = questionary.checkbox(
         "Select Languages:",
         choices=[f"{code} - {LANGS_MAP[code]}" for code in SUPPORTED_LANGS]
@@ -121,7 +116,6 @@ def bulk_download(manga_id: str):
     selected_langs = [choice.split(" - ")[0] for choice in selected_langs]
     lang_params = "&".join([f"translatedLanguage[]={lang}" for lang in selected_langs])
 
-    # Step 2: Fetch chapter list
     include_nsfw = questionary.confirm("Include NSFW?", default=False).ask()
 
     if include_nsfw:
@@ -149,7 +143,6 @@ def bulk_download(manga_id: str):
     chapter_nums = {}
     chapter_langs = {}
 
-    # Step 3: Organize chapter data
     for ch in feed:
         ch_id = ch["id"]
         attrs = ch["attributes"]
@@ -172,7 +165,6 @@ def bulk_download(manga_id: str):
         print("✗ No Chapters Found For Selected Language(s)...")
         return
 
-    # Step 4: Ask user which chapters to download
     selected = questionary.checkbox(
         "Select Chapters To Download:",
         choices=chapters
@@ -184,19 +176,18 @@ def bulk_download(manga_id: str):
 
     os.makedirs(manga_id, exist_ok=True)
 
-    # Step 5: Download selected chapters
     for sel in selected:
         chap_id = chapter_map[sel]
         chap_num = chapter_nums[chap_id]
         chap_lang = chapter_langs[chap_id]
 
         if is_chapter_number(chap_num):
-            zip_filename = os.path.join(manga_id, f"chapter-{chap_num}-{chap_lang}.zip")
+            zip_filename = os.path.join(manga_id, f"chapter-{chap_num}-{chap_lang}.{archive_format}")
         else:
-            zip_filename = os.path.join(manga_id, f"{safe_filename(str(chap_num))}-{chap_lang}.zip")
+            zip_filename = os.path.join(manga_id, f"{safe_filename(str(chap_num))}-{chap_lang}.{archive_format}")
 
         zip_filename = zip_filename.lower()
-        download_chapter(chap_id, zip_filename, chap_num, chap_lang)
+        download_chapter(chap_id, zip_filename, chap_num, chap_lang, archive_format)
 
 # ╔══════════════════════════════════════════════════════════════╗
 # ║                            MAIN                              ║
@@ -209,12 +200,17 @@ def main():
         choices=["Solo", "Bulk"]
     ).ask()
 
+    archive_format = questionary.select(
+        "Select Archive Format:",
+        choices=["zip", "cbz"]
+    ).ask()
+
     if mode == "Solo":
         chap_id = questionary.text("Enter Chapter ID:").ask()
-        download_chapter(chap_id)
+        download_chapter(chap_id, archive_format=archive_format)
     else:
         manga_id = questionary.text("Enter Manga ID:").ask()
-        bulk_download(manga_id)
+        bulk_download(manga_id, archive_format)
 
 if __name__ == "__main__":
     main()

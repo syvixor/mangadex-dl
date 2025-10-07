@@ -1,15 +1,15 @@
-## 📥 Mangadex Downloader
+## 🛸 Mangadex Downloader
 
-A CLI tool to download manga chapters (solo or bulk) from MangaDex.
+A sleek CLI tool to download single or multiple manga chapters from MangaDex with ease.
 
 ### 🪐 Features
 
 - Bulk download multiple chapters at once.
 - Choose specific chapters interactively.
 - Supports multiple languages.
-- Saves all chapter pages as images inside a .zip archive.
+- Saves chapter pages inside a `.zip` or `.cbz` archive.
+- Lets you choose archive format (ZIP or CBZ).
 - Automatically sanitizes filenames.
-
 ### 🧩 Requirements
 
 - Python `3.7` or higher
@@ -65,7 +65,12 @@ You’ll be prompted with two modes:
 - **Solo** → Download by chapter ID.
 - **Bulk** → Download by manga ID and select chapters from an interactive list.
 
-The result will be `.zip` archives containing clean, ordered images of the manga chapter(s).
+You'll also be asked to choose the archive format:
+
+- **zip** → A standard ZIP archive.
+- **cbz** → A ZIP archive with a `.cbz` extension.
+
+The result will be `.zip` or `.cbz` archives containing clean, ordered images of the manga chapter(s).
 
 ### ❓ Example
 
@@ -101,7 +106,7 @@ Select Languages:
 You’ll then be asked:
 
 ```md
-Include NSFW? (Default is `No`)
+Include NSFW? (Default is No)
 ```
 
 - Select `Yes` to include mature chapters.

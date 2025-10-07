@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="mangadex-dl",
-    version="0.1.4",
+    version="0.1.5",
     packages=find_packages(),
     install_requires=[
         "requests",
@@ -18,7 +18,8 @@ setup(
         ]
     },
     author="syvixor",
-    description="A CLI tool to download manga chapters (solo or bulk) from MangaDex.",
+    author_email="syvixor@proton.me",
+    description="A sleek CLI tool to download single or multiple manga chapters from MangaDex with ease.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/syvixor/mangadex-dl",

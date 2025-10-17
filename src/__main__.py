@@ -56,7 +56,7 @@ def check_api_error(resp_json, context="Request"):
 # ║                    CHAPTER DOWNLOADING                       ║
 # ╚══════════════════════════════════════════════════════════════╝
 
-def download_chapter(chapter_id: str, zip_filename: str = None, chapter_num: str = None,
+def chapter_download(chapter_id: str, zip_filename: str = None, chapter_num: str = None,
                      lang_code: str = None, archive_format: str = "zip"):
     if chapter_num is None or lang_code is None:
         meta_url = f"{MANGADEX_API}/chapter/{chapter_id}"
@@ -187,7 +187,7 @@ def bulk_download(manga_id: str, archive_format: str = "zip"):
             zip_filename = os.path.join(manga_id, f"{safe_filename(str(chap_num))}-{chap_lang}.{archive_format}")
 
         zip_filename = zip_filename.lower()
-        download_chapter(chap_id, zip_filename, chap_num, chap_lang, archive_format)
+        chapter_download(chap_id, zip_filename, chap_num, chap_lang, archive_format)
 
 # ╔══════════════════════════════════════════════════════════════╗
 # ║                            MAIN                              ║
@@ -195,22 +195,29 @@ def bulk_download(manga_id: str, archive_format: str = "zip"):
 
 def main():
     print("✦ Mangadex Downloader ✦")
-    mode = questionary.select(
-        "Choose Mode:",
-        choices=["Solo", "Bulk"]
-    ).ask()
+    while True:
+        mode = questionary.select(
+            "Choose Mode:",
+            choices=["Solo", "Bulk"]
+        ).ask()
 
-    archive_format = questionary.select(
-        "Select Archive Format:",
-        choices=["zip", "cbz"]
-    ).ask()
+        archive_format = questionary.select(
+            "Select Archive Format:",
+            choices=["ZIP", "CBZ"]
+        ).ask()
+        archive_format = archive_format.lower()
 
-    if mode == "Solo":
-        chap_id = questionary.text("Enter Chapter ID:").ask()
-        download_chapter(chap_id, archive_format=archive_format)
-    else:
-        manga_id = questionary.text("Enter Manga ID:").ask()
-        bulk_download(manga_id, archive_format)
+        if mode == "Solo":
+            chap_id = questionary.text("Enter Chapter ID:").ask()
+            chapter_download(chap_id, archive_format=archive_format)
+        else:
+            manga_id = questionary.text("Enter Manga ID:").ask()
+            bulk_download(manga_id, archive_format=archive_format)
+
+        again = questionary.confirm("Continue?", default=True).ask()
+        if not again:
+            print("✦ Goodbye!")
+            break
 
 if __name__ == "__main__":
     main()

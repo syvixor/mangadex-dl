@@ -10,6 +10,7 @@ A sleek CLI tool to download single or multiple manga chapters from MangaDex wit
 - Saves chapter pages inside a `.zip` or `.cbz` archive.
 - Lets you choose archive format (ZIP or CBZ).
 - Automatically sanitizes filenames.
+- Continuous download sessions
 ### 🧩 Requirements
 
 - Python `3.7` or higher

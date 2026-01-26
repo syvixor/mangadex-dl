@@ -1,6 +1,6 @@
 ## 🛸 Mangadex Downloader
 
-A sleek CLI tool to download single or multiple manga chapters from MangaDex with ease.
+command-line tool to download single or multiple manga chapters from mangadex with ease.
 
 ### 🪐 Features
 

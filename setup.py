@@ -19,7 +19,7 @@ setup(
     },
     author="syvixor",
     author_email="syvixor@proton.me",
-    description="A sleek CLI tool to download single or multiple manga chapters from MangaDex with ease.",
+    description="command-line tool to download single or multiple manga chapters from mangadex with ease.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/syvixor/mangadex-dl",
